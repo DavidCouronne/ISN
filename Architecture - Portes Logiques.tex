@@ -1,0 +1,211 @@
+\documentclass{article}
+\usepackage{polyglossia}
+\setdefaultlanguage{french}
+\usepackage{mdframed}
+\usepackage{fancyhdr}
+\usepackage{multicol}
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes.gates.logic.US,shapes.gates.logic.IEC,calc}
+\usetikzlibrary{circuits.logic.IEC}\usetikzlibrary{shapes.gates.logic.IEC}
+
+\pgfkeys{/pgf/logic gate IEC symbol align/.cd,
+  center/.code=\pgftransformyshift{0pt},
+}
+
+\usepackage{geometry}
+\geometry{a4paper,left=1.5cm,right=1.5cm,top=2cm,bottom=2cm}
+\newcounter{exo}
+\newcommand{\exercice}{
+\stepcounter{exo}
+\noindent\textbf{Exercice \theexo :}
+}
+\title{Langage Machine}
+\begin{document}
+\lhead{ISN-Portes logiques}
+\rhead{Fichier mis à jour: \today}
+\rfoot{David Couronn\'e}
+\renewcommand \footrulewidth{.2pt}%
+\pagestyle{fancy}
+\begin{center}
+	\Large\textbf{Portes logiques}
+\end{center}
+%\begin{mdframed}
+\textbf{Prérequis:}
+\begin{itemize}
+\setlength{\itemsep}{1pt}
+     \setlength{\parskip}{0pt}
+     \setlength{\parsep}{0pt}
+	\item Binaire, octet, bits.
+	\item Connaissance des composants d'un ordinateur.
+	\item Savoir: comprendre un algorithme.
+\end{itemize}
+\textbf{Objectifs pour les élèves:}
+\begin{itemize}
+\setlength{\itemsep}{1pt}
+     \setlength{\parskip}{0pt}
+     \setlength{\parsep}{0pt}
+	\item Savoir: Connaitre les opérations logiques de base: NOT, AND, OR, XOR. (On n'utilisera pas ici le formalisme $\neg$, $\wedge$,    $\vee$).
+	\item Savoir: circuits combinatoires. On utilisera ici les portes logiques sans entrer dans le détail électronique\footnote{Les montages avec transistors pourront être réalisés avec un Arduino dans le cadre d'un TP.}.
+	\item Conformément au programme, les exercices proposés se feront sur papier sans utiliser d'ordinateur.
+\end{itemize}
+Pour interagir avec des ordinateurs, il faut tout d’abord un système logique assez performant, mais aussi une méthode pour communiquer avec la machine. Comment faire passer des instructions complexes à un ordinateur qui ne comprend que « 0 » et « 1 » ?
+\section{Opérations logiques}
+On se donne deux symboles distincts (classiquement 0 et 1) qu'on appelle booléens. Couramment on interprétera le booléen 0 par « faux » et le booléen 1 par « vrai ». 
+\begin{itemize}
+\setlength{\itemsep}{1pt}
+     \setlength{\parskip}{0pt}
+     \setlength{\parsep}{0pt}
+	\item L'opérateur \emph{NOT}: \textbf{NOT} 1 = 0 et \textbf{NOT} 0 = 1.
+	\item L'opérateur \emph{AND}: $x$ \textbf{AND} $y$ renvoie  1 si $x$ et $y$ sont vrais, 0 sinon.
+	\item L'opérateur \emph{OR}: $x$ \textbf{OR} $y$ renvoie 1 si $x$ ou $y$ sont vrais( c'est-à-dire si au moins un parmi $x$ et $y$ est vrai), 0 sinon.
+	\item L'opérateur \emph{XOR}: le \emph{ou exclusif}. $x$ \textbf{XOR} $y$ renvoie 1 si $x$ ou $y$ est vrai, mais pas les deux en même temps.
+\end{itemize}
+\exercice Compléter la \emph{table de vérité} suivante:
+
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|}\hline
+x & y & x AND y & x OR y & NOT x & NOT y & x XOR y & (NOT x) OR (NOT y) & NOT((NOT x) OR (NOT y))\\\hline
+0 & 0 &        &        &       &       & &                   &                         \\\hline
+0 & 1 &        &        &       &       &  &                  &                         \\\hline
+1 & 0 &        &        &       &       &   &                 &                         \\\hline
+1 & 1 &        &        &       &       &   &                 &                         \\\hline
+\end{tabular}\newline
+Par quelle \emph{combinaison} des opérateurs \textbf{NOT} et \textbf{OR} peut-on remplacer l'opérateur \textbf{AND} \footnote{Savoir: opérations logiques} ?
+
+\exercice On donne la table de vérité d'un opérateur TRUC: \begin{tabular}{|c|c|c|}\hline
+x & y & x TRUC y\\\hline
+0 & 0 & 1 \\\hline
+0 & 1 & 0 \\\hline
+1 & 0 & 1 \\\hline
+1 & 1 & 1 \\\hline
+\end{tabular}
+
+Donner une expression logique pouvant correspondre à cette table de vérité.
+
+\exercice On donne la table de vérité d'un opérateur MACHIN: \begin{tabular}{|c|c|c|}\hline
+x & y & x MACHIN y\\\hline
+0 & 0 & 1 \\\hline
+0 & 1 & 0 \\\hline
+1 & 0 & 0 \\\hline
+1 & 1 & 1 \\\hline
+\end{tabular}
+
+Donner une expression logique pouvant correspondre à cette table de vérité.
+\section{Les portes logiques}
+\subsection{Principe}
+ En électronique digitale, les opérations logiques sont effectuées par des portes logiques. Ce sont des circuits qui combinent les signaux logiques présentés à leurs entrées sous forme de tensions. On aura par exemple 5V pour représenter l’état logique 1 et 0V pour représenter l’état 0. Ces portes logiques sont réalisées en partie grace à des transistors\footnote{Il pourra être intéressant à ce stade de faire une démonstration avec un montage Arduino avec deux boutons poussoirs et une ampoule pour simuler la porte logique OR}. C'est bien simple: sans portes logiques, il n'y aurait ni électronique, ni informatique aujourd'hui.
+
+Portes logiques usuelles:
+\begin{tabular}{|c|c|c|c|c|}\hline
+Opérateur & NOT & AND & OR & XOR\\
+Symbole &\ \newline \begin{tikzpicture}[circuit logic IEC]
+		\node[logic gate IEC symbol align={center}, not gate, draw]{};
+	\end{tikzpicture} &\begin{tikzpicture}[circuit logic IEC]
+
+		\node[logic gate IEC symbol align={center},and gate, draw]{};
+	\end{tikzpicture} &\ \newline \begin{tikzpicture}[circuit logic IEC]
+
+		\node[logic gate IEC symbol align={center},or gate, draw]{};
+	\end{tikzpicture} &\ \newline \begin{tikzpicture}[circuit logic IEC]
+
+		\node[logic gate IEC symbol align={center},xor gate, draw]{};
+	\end{tikzpicture}\\\hline
+\end{tabular}
+
+A part la porte logique NOT, les autres portes logiques ne sont pas limitées à deux entrées, mais peuvent en prendre plusieurs\footnote{Cas particulier: la porte logique XOR à plusieurs entrées conduit à un bit de parité}.
+
+\textbf{Exemple:}
+Avec une porte logique \emph{OR} à trois entrées: 
+\begin{tikzpicture}[circuit logic IEC]
+
+		\node (x0) at (0,0) {1};
+		\node (x1) at (0,0.5) {0};
+		\node (x2) at (0,1) {1};
+		\node[or gate IEC, draw, , logic gate inputs=nnn] at ($(x1)+(1,0)$) (Or1) {};
+		\draw (x0) -- (0.5,0) |- (Or1.input 3);
+		\draw (x1) -- (Or1.input 2);
+		\draw (x2) -- (0.5,1) |- (Or1.input 1);
+		\draw (Or1.output) -- ([xshift=0.5cm]Or1.output) node[above] {$1$};
+	\end{tikzpicture}
+	
+\subsection{Comparateurs}
+Comment tester électroniquement qu'un nombre est égal à une constante ? Par exemple $x == 5$ ?
+
+Commençons par l'écriture binaire du nombre: 5 s'écrit 101. Nous avons un nombre codé sur 3 bits.
+
+Si $x$ est codé sur 3 bits, chacun des bits peut être assimilé à une entrée: $e_1 e_2 e_3$. L'astuce consiste à utiliser des portes NOT, puis une porte AND.
+
+\begin{tikzpicture}[circuit logic IEC]
+		\node (x0) at (0,0) {$e_3$};
+		\node (x1) at (0,1) {$e_2$};
+		\node (x2) at (0,2) {$e_1$};
+		\node[not gate IEC, draw] at ($(x1)+(1,0)$) (Not1) {};
+		%\node[and gate IEC, draw, logic gate inputs=nn, anchor=input 1] at ($(Or3.output)+(1,0)$) (And1) {};
+		\node[and gate IEC, draw, logic gate inputs=nnn] at ($(Not1.output) + (1,0)$) (And1) {};
+		\draw (x0) -- (1.7,0) |- (And1.input 3);
+		\draw (x1) -- (Not1.input);
+		\draw (Not1.output) -- (And1.input 2);
+		\draw (x2) -- (1.7,2) |- (And1.input 1);
+		\draw (And1.output) -- ([xshift=1cm]And1.output) node[above] {$Sortie$};
+	\end{tikzpicture}
+
+\exercice Construire la table de vérité du circuit ci-dessus: \begin{tabular}{|c|c|c|c|}\hline
+$e_1$ & $e_2$ & $e_3$ & Sortie\\\hline
+0 & 0 & 0 & ...\\\hline
+... & ... & ... & ...\\\hline
+\end{tabular}
+
+ On a donc un circuit qui renvoie un booléen: 1 si $x$ est égal à 5, 0 sinon.
+
+\exercice Dans le même esprit, proposer un circuit qui teste: $x == 6$
+
+\exercice 
+Comment maintenant comparer deux nombres ? Par exemple comment tester x == y ?
+
+Prenons deux nombres codés sur 2 bits: $x=e_1e_2$ et $y=f_1f_2$. Voici un circuit: 
+
+\begin{tikzpicture}[circuit logic IEC]
+		\node (x0) at (0,0) {$f_2$};
+		\node (x1) at (0,1) {$e_2$};
+		\node (x2) at (0,2) {$f_1$};
+		\node (x3) at (0,3) {$e_1$};
+		\node[xor gate IEC, draw, logic gate inputs=nn] at ($(x1)+(2,-0.5)$) (Xor1) {};
+		\node[xor gate IEC, draw, logic gate inputs=nn] at ($(x3)+(2,-0.5)$) (Xor2) {};
+		\node[not gate IEC, draw] at ($(Xor1.output)+(1,0)$) (Not1) {};
+		\node[not gate IEC, draw] at ($(Xor2.output)+(1,0)$) (Not2) {};
+		\node[and gate IEC, draw, logic gate inputs=nn] at ($(Not1.output)+(2,1)$) (And1) {};
+		\draw (x3) -- (1,3) |- (Xor2.input 1);
+		\draw (x2) -- (1,2) |- (Xor2.input 2);
+		\draw (x1) -- (1,1) |- (Xor1.input 1);
+		\draw (x0) -- (1,0) |- (Xor1.input 2);
+		\draw (Xor1.output) -- (Not1.input);
+		\draw (Xor2.output) -- (Not2.input);
+		\draw (Not2.output) -- ($(Not2.output)+(1,0)$) |- (And1.input 1);
+		\draw (Not1.output) -- ($(Not1.output)+(1,0)$) |- (And1.input 2);
+		\draw (And1.output) -- ([xshift=1cm]And1.output) node[above] {$Sortie$};
+	\end{tikzpicture}
+
+
+
+Montrer que ce circuit logique compare bien deux nombres codés sur 2 bits.
+
+\exercice Un comparateur $n$ bits prend en entrée deux nombres de $n$ bits (soit $2n$ bits au total) et possède une sortie unique qui doit être 1 si les deux nombres sont égaux, 0 sinon. Construire un circuit logique qui implémente un comparateur 3 bits.
+
+\subsection{Circuits combinatoires}
+
+
+
+
+\exercice L'opérateur \textbf{NOR} est un opérateur logique binaire correspondant à \textbf{NOT OR}.
+\begin{enumerate}
+	\item Donner la table de vérité de cet opérateur.
+	\item Montrer que les quatre opérateurs logiques usuels (NOT, AND, OR, XOR) peuvent être construits uniquement à l'aide de cet opérateur.
+	\item Implémenter ces quatre opérateurs sous forme de circuit logique utilisant uniquement des portes NOR. Le symbole de la porte NOR est: \begin{tikzpicture}
+		\node[nor gate IEC, draw]{};
+	\end{tikzpicture}
+\end{enumerate}
+
+\exercice La porte logique XOR existe en version avec plusieurs entrées. Par exemple avec une version à 3 entrées $e_1, e_2, e_3$, elle correspond à l'opérateur logique: ($e_1$ XOR $e_2$) XOR $e_3$. Proposer un circuit logique, n'utilisant que des portes XOR à deux entrées, pouvant représenter une porte XOR à 3 entrées. En donner la table de vérité.
+
+Faire de même avec une porte XOR à 4 entrées. Que peut-on conjecturer sur le comportement d'une porte XOR à $n$ entrées ?
+
+\end{document}
