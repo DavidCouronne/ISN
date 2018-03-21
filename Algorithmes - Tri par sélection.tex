@@ -1,0 +1,145 @@
+\documentclass{article}
+\usepackage{polyglossia}
+\setdefaultlanguage{french}
+\usepackage{mdframed}
+\usepackage{fancyhdr}
+\usepackage{geometry}
+\geometry{a4paper,left=1.5cm,right=1.5cm,top=2cm,bottom=2cm}
+\newcounter{exo}
+\newcommand{\exercice}{
+\stepcounter{exo}
+\noindent\textbf{Exercice \theexo :}
+}
+\title{Tri par séléction}
+\begin{document}
+\lhead{ISN-Tri par sélection}
+\rhead{Fichier mis à jour: \today}
+\rfoot{David Couronn\'e}
+\renewcommand \footrulewidth{.2pt}%
+\pagestyle{fancy}
+\begin{center}
+	\Large\textbf{Tri par séléction}
+\end{center}
+%\begin{mdframed}
+\textbf{Prérequis:}
+\begin{itemize}
+\setlength{\itemsep}{1pt}
+     \setlength{\parskip}{0pt}
+     \setlength{\parsep}{0pt}
+	\item Manipulations des listes en Pyhton. Bases de programmation Python.
+	\item Algorithme de recherche dichotomique, pour la notion de complexité.
+\end{itemize}
+\textbf{Objectifs pour les élèves:}
+\begin{itemize}
+\setlength{\itemsep}{1pt}
+     \setlength{\parskip}{0pt}
+     \setlength{\parsep}{0pt}
+	\item Savoir: Algorithme de référence: tri par sélection.\newline
+	Conformément au programme, l'objectif est une compréhension de cet algorithme et la capacité à le mettre en oeuvre. Dans le cadre de cette activé, la mise en oeuvre se fera à l'aide d'une implémentation en Python, puis d'un mini-projet.
+	\item Les différentes capacités, ou observations, seront indiquées dans les notes en bas de page.
+\end{itemize}
+%\end{mdframed}
+\section{Principe}
+\exercice Trier à la main, par ordre croissant, la liste de nombres: [39, 77, 30, 43, 29, 58, 94, 67, 74, 39, 74, 65, 36, 47, 60, 100, 95, 5, 78, 59]. Décrire l'algorithme utilisé. \footnote{Capacité: Concevoir un algorithme}
+
+\smallskip
+
+Nous sommes souvent amené à trier des données: des notes, des noms, des photos par date,...
+
+Il existe plusieurs algorithmes de tris utilisés en informatique, chacun présentant des avantages et inconvénients, et plus ou moins adaptés suivant le type de données.
+
+\exercice En faisant une recherche sur Internet, citer 5 algorithmes de tri\footnote{Compétence: conduire des recherches documentaires.}.
+
+\smallskip
+
+Parmi tous les algorithmes de tris existants, le \emph{tri par sélection}, en plus d'être un des algorithmes de référence au programme, est l'un des plus facile à implémenter. Il fonctionne avec toutes les quantités comparables (caractères, flottants, structures, etc...), mais pour cette activité nous allons l'utiliser avec des nombres.
+
+\textbf{Algorithme de tri par sélection: }Considérons une liste de nombres: liste = [6, 2, 8, 1, 4, 3, 7, 9, 5, 0]
+\begin{enumerate}
+\setlength{\itemsep}{1pt}
+     \setlength{\parskip}{0pt}
+     \setlength{\parsep}{0pt}
+	\item \'Etape 1:\begin{itemize}
+\setlength{\itemsep}{1pt}
+     \setlength{\parskip}{0pt}
+     \setlength{\parsep}{0pt}
+	\item On recherche le plus petit élément de cette liste. Ici c'est 0, en position d'indice 9.
+	\item On échange cet élément avec le premier élément de la liste.\newline
+	On obtient:  liste=[\textbf{0}, 2, 8, 1, 4, 3, 7, 9, 5, \textbf{6}]
+	\item Le premier élément est donc le plus petit de la liste. On continue alors avec la même liste, en ignorant son premier élément.\newline
+	C'est-à-dire: liste = [\fbox{0}, 2, 8, 1, 4, 3, 7, 9, 5, 6]
+	\begin{mdframed}
+	Toute l'astuce de l'algorithme est là:on ignore volontairement dans la suite du traitement tous les éléments que l'on a placé en début de liste.
+	\end{mdframed}
+	\end{itemize}
+	\item \'Etape 2: liste = [\fbox{0}, \fbox{\textbf{1}}, 8, \textbf{2}, 4, 3, 7, 9, 5, 6]
+	\item \'Etape 3: liste = [\fbox{0}, \fbox{1}, \fbox{\textbf{2}}, \textbf{8}, 4, 3, 7, 9, 5, 6]
+	\item etc... On sait que notre liste est triée lorsque le nombre d'éléments non triés est égal à 1.
+\end{enumerate}
+
+\exercice Terminer l'exemple\footnote{Capacité: Comprendre un algorithme}. En combien d'étapes la liste est-elle triée ? 
+
+\exercice Appliquer l'algorithme de tri par sélection à la liste [10, 8, 6, 4, 2, 0], puis à la liste [0, 1, 2, 3, 4, 5] (!). Combien d'étapes pour chaque liste ? Que peut-on en penser\footnote{Capacité: S'interroger sur l'efficacité d'un algorithme} ?
+\section{Implémentation en Python}
+Maintenant que vous connaissez l'algorithme et que vous avez vu sur quelques exemples son fonctionnement, nous pouvons passer à son implémentation \footnote{Capacité: Programmer un algorithme}!
+
+Mais avant cela, on remarque qu'il est possible de décomposer l'algorithme en plusieurs " sous-fonctions ", ce qui facilitera le travail :
+\begin{itemize}
+\setlength{\itemsep}{1pt}
+     \setlength{\parskip}{0pt}
+     \setlength{\parsep}{0pt}
+	\item La recherche du plus petit élément.
+	\item L'échange de deux éléments.
+	\item La réalisation du tri.
+\end{itemize}
+
+\subsection{Recherche du plus petit élément}
+\exercice \'Ecrire une fonction \emph{indice\_min\_liste} qui prend en entrée une liste de nombres, et qui renvoie \emph{l'indice} de son plus petit élément\footnote{Capacités: Concevoir l'entête (ou l'interface) d'une fonction, puis la fonction elle-même. Mettre un programme au point en le testant}.
+\subsection{\'Echanger deux éléments d'une liste}
+\exercice \'Ecrire une fonction \emph{echange\_elements} qui prend en entrée une liste, deux indices i et j, et qui modifie la liste de la manière suivante: les éléments d'indices i et j sont échangés.
+
+\subsection{Le tri}
+\exercice En utilisant les fonctions précédentes, écrire une fonction \emph{tri\_selection} qui applique l'algorithme de tri par sélection\footnote{Capacités: comprendre un algorithme, puis le programmer}.
+
+\section{Complexité du tri par sélection}
+Nous avons déjà abordé la notion de complexité lors du TP sur la recherche dichotomique.
+
+\exercice Charger le script \emph{complexite\_tri\_selection.py}. Ce script propose une autre implémentation du tri par sélection, mais surtout permet à chaque appel d'afficher le nombre total de comparaisons effectuées dans les boucles utilisées par la fonction triSelection.
+
+Tester la fonction triSelection sur trois listes de longueur 5: la première liste déjà triée, la deuxième triée par ordre décroissant, et la troisième "au hasard". Quel est le cas le plus favorable\footnote{On peut conjecturer ici l'indépendance du nombre de comparaisons par rapport à la nature triée ou non de la liste. Particularité du tri par sélection: la complexité ne dépend que de la taille des données. Pas de complexité dans le "meilleur des cas" ou dans le "pire des cas"} ?
+
+\medskip
+
+\exercice On va effectuer des tests sur des listes de tailles différentes. Dans le script précédent, écrire une fonction \emph{test\_tri} qui prend en entrée un entier $n$, puis:
+\begin{itemize}
+\setlength{\itemsep}{1pt}
+     \setlength{\parskip}{0pt}
+     \setlength{\parsep}{0pt}
+	\item génère une liste1 d'entiers de 0 à $n-1$.
+	\item génère une liste2 d'entiers de $n-1$ à 0. (triée dans l'ordre décroissant)
+	\item génère une liste3 de $n$ entiers pris au hasard entre 0 et 100. On pourra utiliser la fonction \emph{randint} du module \textbf{random}.
+	\item Applique la fonction \emph{triSelection} à chacune des liste.
+\end{itemize}
+Effectuer quelques tests. Que peut-on penser des résultats ?
+
+\exercice Remplir un tableau de valeur du nombre de comparaisons en fonction de $n$, pour $n$ variant de 1 à 10. A l'aide de la calculatrice, ou d'un tableur, visualiser le nuage de points. Quelle semble être la nature de la courbe ?
+
+\exercice En notant $n$ la taille de la liste, déterminer en fonction de $n$ le nombre de comparaisons nécessaires à l'exécution de la fonction triSelection\footnote{On tombe sur une complexité quadratique:$\frac{n(n-1)}{2}$ donc $O(n^2)$.}. 
+
+\section{Miniprojet}
+Dans un jeu de 32 cartes, une carte peut être modélisée par une liste de deux éléments, par exemple ["Trèfle", "As"]. Un jeu de carte mélangé est donc une liste de 32 "cartes". Par exemple jeu = [["Trèfle", "As"], ["Pique", "8"], ["Pique", "Valet"], ["Trèfle", "7"], ["Coeur", "As"], $\cdots$].\newline
+
+\medskip
+
+\emph{En binôme ou en trinôme}\footnote{Paragraphe 3 du programme ISN 2017 sur les projets. La principale difficulté va consister à "comparer" deux cartes. Il sera nécessaire de guider les élèves vers l'écriture d'une fonction de comparaison retournant un booléen. Ce miniprojet pourra être réutilisé pour l'algorithme de tri par fusion.}, écrire un script qui "mélange" un jeu de cartes au hasard,  puis trie le jeu en utilisant le principe du tri par sélection, et suivant l'ordre:
+\begin{itemize}
+	\item Trèfle < Carreau < Coeur < Pique pour les couleurs
+	\item 7<8<9<10<Valet<Dame<Roi<As pour les valeurs.
+\end{itemize}
+
+  
+	
+	
+
+En complément, on pourra tenter de faire une distribution de 8 cartes à 4 joueurs, puis trier la "main" de chacun. On pourrait même imaginer utiliser les règles de la Belote: 7-8-9-V-D-R-10-As pour les couleurs normales et 7-8-D-R-10-As-9-V pour l'atout.
+\end{document}
